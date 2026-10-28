@@ -1,0 +1,6 @@
+{
+  "name": "CineFreak - Watch & Download Movies & Web Series",
+  "description": "Free Download All Hollywood, Bollywood, Bangla, TV Series in Hindi Dubbed, Dual Audio, HEVC 10bit, 480p, 720p, 1080p, 4K.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
