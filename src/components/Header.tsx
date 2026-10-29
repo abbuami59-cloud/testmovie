@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Clock, Film, Sparkles, X, Menu, Flame, Shield, Layers } from 'lucide-react';
+import { Search, Clock, Film, Tv, X, Menu, Flame, Shield, Layers } from 'lucide-react';
 
 interface HeaderProps {
   onOpenRecent: () => void;
@@ -17,7 +17,7 @@ interface HeaderProps {
 const NAV_ITEMS = [
   { id: 'All', label: 'All Releases', icon: Layers },
   { id: 'Trending', label: 'Trending', icon: Flame },
-  { id: '4K', label: '4K Ultra HD', icon: Sparkles },
+  { id: '4K', label: '4K Ultra HD', icon: Tv },
   { id: 'WEB-Series', label: 'Series', icon: Film },
   { id: 'Bangla Movies', label: 'Bangla' },
   { id: 'Hindi Dubbed', label: 'Hindi Dubbed' },
@@ -133,10 +133,11 @@ export const Header: React.FC<HeaderProps> = ({
               <span className="font-semibold text-zinc-200">{totalCached} Cached</span>
             </button>
 
-            {/* How to download */}
+            {/* How to download guide in top corner */}
             <button
               onClick={onOpenHowTo}
-              className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-semibold text-zinc-300 hover:text-white transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-semibold text-zinc-300 hover:text-white transition-colors cursor-pointer"
+              title="CineFreak Download Guide"
             >
               <Shield className="w-3.5 h-3.5 text-amber-400" />
               <span>Guide</span>
@@ -156,19 +157,6 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               )}
             </button>
-
-            {/* Telegram Channel Link */}
-            <a
-              href="https://t.me/cinefreak"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white text-xs font-bold hover:brightness-110 active:scale-95 transition-all shadow-md shadow-sky-500/20"
-            >
-              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                <path d="M21.9 4.3 18.7 19.4c-.2 1-.9 1.3-1.7.8l-4.7-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.8 8.8-7.9c.4-.3-.1-.5-.6-.2L6.6 13.1 1.9 11.6c-1-.3-1-1 .2-1.5l18.4-7.1c.9-.3 1.6.2 1.4 1.3z" />
-              </svg>
-              <span className="hidden sm:inline">Telegram</span>
-            </a>
           </div>
 
         </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Play, Download, ChevronLeft, ChevronRight, Star, Calendar, Sparkles } from 'lucide-react';
+import { Play, Download, ChevronLeft, ChevronRight, Star, Calendar, Flame } from 'lucide-react';
 import type { SliderSlide } from '../data/cinefreakData.ts';
 
 interface HeroSliderProps {
@@ -60,7 +60,7 @@ export const HeroSlider: React.FC<HeroSliderProps> = ({ slides, onSelectMovie })
           {/* Badges */}
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 backdrop-blur-md">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <Flame className="w-3.5 h-3.5 text-amber-400 fill-current" />
               <span>{current.tagFeat} Spotlight</span>
             </span>
 

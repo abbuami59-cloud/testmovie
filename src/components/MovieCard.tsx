@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, Play, Sparkles, Clock } from 'lucide-react';
+import { Star, Play, Flame, Clock } from 'lucide-react';
 import type { MovieItem } from '../data/cinefreakData.ts';
 
 interface MovieCardProps {
@@ -21,7 +21,7 @@ export const MovieCard: React.FC<MovieCardProps> = ({ movie, onSelect }) => {
           {/* Rating or Trending */}
           {movie.trending ? (
             <span className="inline-flex items-center gap-1 bg-amber-500/90 backdrop-blur-md text-slate-950 font-black text-[10px] px-2 py-0.5 rounded-full shadow-md">
-              <Sparkles className="w-2.5 h-2.5 fill-current" />
+              <Flame className="w-2.5 h-2.5 fill-current" />
               HOT
             </span>
           ) : (

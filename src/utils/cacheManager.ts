@@ -1,8 +1,8 @@
 import type { MovieItem } from '../data/cinefreakData.ts';
 
-const DB_NAME = 'CineFreakDB_v6';
+const DB_NAME = 'CineFreakDB_v8';
 const STORE_NAME = 'movies_store';
-const CACHE_TIMESTAMP_KEY = 'cinefreak_last_sync_v6';
+const CACHE_TIMESTAMP_KEY = 'cinefreak_last_sync_v8';
 
 function openDB(): Promise<IDBDatabase | null> {
   if (typeof window === 'undefined' || !window.indexedDB) return Promise.resolve(null);

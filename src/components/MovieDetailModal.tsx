@@ -37,7 +37,7 @@ export const MovieDetailModal: React.FC<MovieDetailModalProps> = ({ movie, onClo
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const handleWatch = (dl: { quality: string; size: string; watchLink: string; dlLink: string }) => {
+  const handleWatch = (dl: { quality: string; size: string; watchLink?: string; dlLink: string }) => {
     const target = dl.watchLink || dl.dlLink;
     setToastMessage(`Launching HD buffer-free streaming player...`);
     setTimeout(() => {

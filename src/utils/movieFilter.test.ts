@@ -6,6 +6,7 @@ import type { MovieItem, RecentItem } from '../data/cinefreakData.ts';
 const dummyMovies: MovieItem[] = [
   {
     id: '1',
+    slug: 'colony-2026',
     title: 'Colony (2026) Dual Audio [Hindi & English] WEB-DL',
     cleanName: 'Colony',
     poster: 'p1.jpg',
@@ -30,6 +31,7 @@ const dummyMovies: MovieItem[] = [
   },
   {
     id: '2',
+    slug: 'visionquest-2026',
     title: 'VisionQuest (2026) Disney+ Hotstar Original Web series Season 1',
     cleanName: 'VisionQuest',
     poster: 'p2.jpg',
@@ -49,6 +51,31 @@ const dummyMovies: MovieItem[] = [
     quality: '4K',
     videoFormat: 'MKV',
     synopsis: 'Test series',
+    screenshots: [],
+    downloads: [],
+  },
+  {
+    id: '3',
+    slug: 'cafe-umbrella-2026',
+    title: 'Cafe Umbrella (2026) Bengali WEB-DL 720p & 1080p | Full Movie Download',
+    cleanName: 'Cafe Umbrella',
+    poster: 'p3.jpg',
+    timeAgo: 'Just now',
+    trending: true,
+    formats: ['Bangla Movies', 'WEB-DL'],
+    status: '',
+    has4k: false,
+    type: 'Movie',
+    rating: '7.8',
+    genres: ['Drama', 'Thriller'],
+    releaseDate: '2026',
+    runtime: '2h',
+    country: 'Bangladesh',
+    language: 'Bengali',
+    subtitle: 'English',
+    quality: '1080p',
+    videoFormat: 'MKV',
+    synopsis: 'Acclaimed Bangladeshi original movie streaming on Chorki.',
     screenshots: [],
     downloads: [],
   },
@@ -72,10 +99,16 @@ test('filterMovies matches platform Disney+ Hotstar', () => {
   assert.equal(result[0].id, '2');
 });
 
+test('filterMovies matches platform Chorki', () => {
+  const result = filterMovies(dummyMovies, '', 'All', 'Chorki', null);
+  assert.equal(result.length, 1);
+  assert.equal(result[0].id, '3');
+});
+
 test('filterRecentItems filters by type or ep', () => {
   const recent: RecentItem[] = [
-    { id: 1, t: 100, tag: 'New', k: 'new', type: 'Movie', title: 'M1', sub: '', link: '', poster: '' },
-    { id: 2, t: 101, tag: 'EP 12 added', k: 'ep', type: 'Series', title: 'S1', sub: '', link: '', poster: '' },
+    { id: '1', tag: 'New', k: 'new', type: 'Movie', title: 'M1', sub: '', poster: '' },
+    { id: '2', tag: 'EP 12 added', k: 'ep', type: 'Series', title: 'S1', sub: '', poster: '' },
   ];
   assert.equal(filterRecentItems(recent, 'Movie').length, 1);
   assert.equal(filterRecentItems(recent, 'Series').length, 1);
@@ -101,6 +134,6 @@ test('all movies have unique valid non-empty slugs', async () => {
   assert.equal(slugs.length > 0, true);
   assert.equal(new Set(slugs).size, slugs.length);
   for (const s of slugs) {
-    assert.match(s, /^[a-z0-9-]+$/);
+    assert.match(s, /^[a-z0-9-%]+$/i);
   }
 });

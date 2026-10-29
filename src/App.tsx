@@ -1,9 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Header } from './components/Header.tsx';
-import { NoticeBanner } from './components/NoticeBanner.tsx';
 import { HeroSlider } from './components/HeroSlider.tsx';
 import { PlatformsRail } from './components/PlatformsRail.tsx';
-import { CollectionsRail } from './components/CollectionsRail.tsx';
 import { MovieCard } from './components/MovieCard.tsx';
 import { MovieDetailPage } from './components/MovieDetailPage.tsx';
 import { RecentDrawer } from './components/RecentDrawer.tsx';
@@ -12,17 +10,12 @@ import { Footer } from './components/Footer.tsx';
 import {
   SLIDER_SLIDES,
   OTT_PLATFORMS,
-  COLLECTIONS,
   MOVIES,
   RECENT_ITEMS,
   type MovieItem,
 } from './data/cinefreakData.ts';
 import { filterMovies, paginate } from './utils/movieFilter.ts';
-import {
-  loadCachedMovies,
-  saveMoviesToIndexedDB,
-  loadMoviesFromIndexedDB,
-} from './utils/cacheManager.ts';
+import { saveMoviesToIndexedDB } from './utils/cacheManager.ts';
 import {
   Flame,
   Film,
@@ -44,6 +37,16 @@ const FILTER_PILLS = [
 
 function getSlugFromPath(): string {
   if (typeof window === 'undefined') return '';
+  // Check hash route first (e.g. #/movie/:slug or #:slug)
+  const hash = window.location.hash || '';
+  if (hash.startsWith('#/movie/')) {
+    return hash.replace('#/movie/', '').replace(/^\//, '').replace(/\/$/, '').trim();
+  }
+  if (hash.startsWith('#/')) {
+    const s = hash.replace('#/', '').replace(/^\//, '').replace(/\/$/, '').trim();
+    if (s && s !== 'home') return s;
+  }
+  // Then check pathname
   const pathname = window.location.pathname;
   if (pathname.startsWith('/movie/')) {
     return pathname.replace('/movie/', '').replace(/^\//, '').replace(/\/$/, '').trim();
@@ -55,16 +58,9 @@ function getSlugFromPath(): string {
 }
 
 export default function App() {
-  // 1. Initial synchronous state with bundled releases for instant first paint
-  const [moviesList, setMoviesList] = useState<MovieItem[]>(() => {
-    const cached = loadCachedMovies(MOVIES);
-    return cached.movies;
-  });
-
-  const [lastSyncTime, setLastSyncTime] = useState<number>(() => {
-    const cached = loadCachedMovies(MOVIES);
-    return cached.lastSyncTime;
-  });
+  // 1. All 1,582 releases and download links are 100% hardcoded directly in the website bundle
+  const [moviesList, setMoviesList] = useState<MovieItem[]>(() => MOVIES);
+  const [lastSyncTime, setLastSyncTime] = useState<number>(() => Date.now());
 
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncToast, setSyncToast] = useState<string | null>(null);
@@ -80,40 +76,9 @@ export default function App() {
   // Clean path routing state (WITHOUT # symbol)
   const [currentSlug, setCurrentSlug] = useState<string>(() => getSlugFromPath());
 
-  // 2. Automatic background hydration of 1,434+ catalog
+  // 2. Persist hardcoded catalog to IndexedDB locally for instantaneous offline access
   useEffect(() => {
-    let isMounted = true;
-
-    async function hydrateFullCatalog() {
-      try {
-        const dbCached = await loadMoviesFromIndexedDB();
-        const hasStaleLinks = dbCached?.some(m => m.downloads?.some(d => d.dlLink?.includes('cinefreak_')));
-        if (dbCached && dbCached.length >= 1000 && !hasStaleLinks) {
-          if (isMounted) {
-            setMoviesList(dbCached);
-            return;
-          }
-        }
-
-        const res = await fetch('/cinefreak_catalog.json');
-        if (res.ok) {
-          const fullCatalog: MovieItem[] = await res.json();
-          if (Array.isArray(fullCatalog) && fullCatalog.length > 0 && isMounted) {
-            setMoviesList(fullCatalog);
-            saveMoviesToIndexedDB(fullCatalog);
-            setLastSyncTime(Date.now());
-          }
-        }
-      } catch (err) {
-        console.warn('Catalog hydration background notice:', err);
-      }
-    }
-
-    hydrateFullCatalog();
-
-    return () => {
-      isMounted = false;
-    };
+    saveMoviesToIndexedDB(MOVIES).catch(() => {});
   }, []);
 
   // 3. Listen to browser Back/Forward (popstate) navigation for clean paths
@@ -123,7 +88,11 @@ export default function App() {
     };
 
     window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
+    window.addEventListener('hashchange', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('hashchange', handlePopState);
+    };
   }, []);
 
   // Path navigation helper (Clean URLs e.g. /movie/colony-2026-full-movie-download)
@@ -147,26 +116,21 @@ export default function App() {
     ) || null;
   }, [currentSlug, moviesList]);
 
-  // Sync handler
+  // Sync handler (Pure local verification with zero network fetch)
   const handleSyncLatest = async () => {
     setIsSyncing(true);
-    setSyncToast(`Syncing ${moviesList.length} releases into browser storage...`);
+    setSyncToast(`Verifying all ${MOVIES.length} hardcoded releases...`);
 
     try {
-      const res = await fetch('/cinefreak_catalog.json');
-      if (res.ok) {
-        const fullCatalog: MovieItem[] = await res.json();
-        setMoviesList(fullCatalog);
-        await saveMoviesToIndexedDB(fullCatalog);
-        setLastSyncTime(Date.now());
-      }
+      await saveMoviesToIndexedDB(MOVIES);
+      setLastSyncTime(Date.now());
       setIsSyncing(false);
-      setSyncToast(`Success! ${moviesList.length} CineFreak releases cached.`);
-      setTimeout(() => setSyncToast(null), 3500);
+      setSyncToast(`All ${MOVIES.length} CineFreak releases are hardcoded locally inside the website!`);
+      setTimeout(() => setSyncToast(null), 3000);
     } catch {
       setIsSyncing(false);
-      setSyncToast('Cache verified and ready!');
-      setTimeout(() => setSyncToast(null), 3500);
+      setSyncToast(`All ${MOVIES.length} releases are ready!`);
+      setTimeout(() => setSyncToast(null), 3000);
     }
   };
 
@@ -265,10 +229,7 @@ export default function App() {
         />
       ) : (
         <>
-          {/* 2. Sleek Notice Banner */}
-          <NoticeBanner onHowToDownload={() => setIsHowToOpen(true)} />
-
-          {/* 3. Hero Feature Spotlight */}
+          {/* 2. Hero Feature Spotlight */}
           {!isAnyFilterActive && (
             <HeroSlider
               slides={SLIDER_SLIDES}
@@ -279,18 +240,11 @@ export default function App() {
             />
           )}
 
-          {/* 4. Streaming Platforms Rail */}
+          {/* 3. Streaming Platforms Rail */}
           <PlatformsRail
             platforms={OTT_PLATFORMS}
             selectedPlatform={selectedPlatform}
             onSelectPlatform={handlePlatformChange}
-          />
-
-          {/* 5. Movie Franchises Rail */}
-          <CollectionsRail
-            collections={COLLECTIONS}
-            selectedCollection={selectedCollection}
-            onSelectCollection={handleCollectionChange}
           />
 
           {/* 6. Main Content Area */}

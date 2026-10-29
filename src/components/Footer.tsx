@@ -1,5 +1,5 @@
 import React from 'react';
-import { Film, Shield, Send, ExternalLink } from 'lucide-react';
+import { Film, Shield, ExternalLink } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -22,15 +22,6 @@ export const Footer: React.FC = () => {
 
           {/* Connect links */}
           <div className="flex items-center gap-3">
-            <a
-              href="https://t.me/cinefreak"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/[0.05] hover:bg-white/10 text-white font-semibold transition-colors"
-            >
-              <Send className="w-3.5 h-3.5 text-sky-400" />
-              <span>Official Telegram</span>
-            </a>
             <a
               href="mailto:contact@cinefreak.net"
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white/[0.05] hover:bg-white/10 text-zinc-300 hover:text-white font-semibold transition-colors"

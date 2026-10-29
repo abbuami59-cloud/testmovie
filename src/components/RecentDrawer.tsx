@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Clock, Sparkles } from 'lucide-react';
+import { X, Clock } from 'lucide-react';
 import type { RecentItem, MovieItem } from '../data/cinefreakData.ts';
 import { filterRecentItems } from '../utils/movieFilter.ts';
 
@@ -35,6 +35,7 @@ export const RecentDrawer: React.FC<RecentDrawerProps> = ({
     } else {
       onSelectMovie({
         id: `recent-${item.id}`,
+        slug: item.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'recent-item',
         title: `${item.title} - ${item.sub}`,
         cleanName: item.title,
         poster: item.poster,

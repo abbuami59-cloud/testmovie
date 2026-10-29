@@ -33,19 +33,70 @@ export function filterMovies(
 
   if (platform) {
     const platLower = platform.toLowerCase();
-    result = result.filter(
-      (m) =>
-        m.title.toLowerCase().includes(platLower) ||
-        (platLower.includes('netflix') && m.title.toLowerCase().includes('netflix')) ||
-        (platLower.includes('prime') && m.title.toLowerCase().includes('prime')) ||
-        (platLower.includes('hotstar') && (m.title.toLowerCase().includes('hotstar') || m.title.toLowerCase().includes('disney'))) ||
-        (platLower.includes('hoichoi') && m.title.toLowerCase().includes('hoichoi')) ||
-        (platLower.includes('bongo') && m.title.toLowerCase().includes('bongo')) ||
-        (platLower.includes('sony') && (m.title.toLowerCase().includes('sony') || m.title.toLowerCase().includes('sonyliv'))) ||
-        (platLower.includes('zee5') && m.title.toLowerCase().includes('zee5')) ||
-        (platLower.includes('chorki') && m.title.toLowerCase().includes('chorki')) ||
-        (platLower.includes('klikk') && m.title.toLowerCase().includes('klikk'))
-    );
+    result = result.filter((m) => {
+      const title = m.title.toLowerCase();
+      const syn = (m.synopsis || '').toLowerCase();
+      const formats = (m.formats || []).map((f) => f.toLowerCase());
+      const country = (m.country || '').toLowerCase();
+      const lang = (m.language || '').toLowerCase();
+
+      if (platLower.includes('chorki')) {
+        return (
+          title.includes('chorki') ||
+          syn.includes('chorki') ||
+          country.includes('bangladesh') ||
+          (title.includes('bengali') && (title.includes('web-dl') || title.includes('web series') || m.type === 'Series')) ||
+          (formats.includes('bangla movies') && !title.includes('hoichoi'))
+        );
+      }
+      if (platLower.includes('netflix')) {
+        return title.includes('netflix') || syn.includes('netflix');
+      }
+      if (platLower.includes('hotstar') || platLower.includes('disney')) {
+        return (
+          title.includes('hotstar') ||
+          title.includes('disney') ||
+          syn.includes('hotstar') ||
+          syn.includes('disney')
+        );
+      }
+      if (platLower.includes('prime')) {
+        return (
+          title.includes('prime') ||
+          title.includes('amazon') ||
+          syn.includes('prime') ||
+          syn.includes('amazon')
+        );
+      }
+      if (platLower.includes('hoichoi')) {
+        return title.includes('hoichoi') || syn.includes('hoichoi');
+      }
+      if (platLower.includes('bongo')) {
+        return title.includes('bongo') || syn.includes('bongo');
+      }
+      if (platLower.includes('sony') || platLower.includes('sonyliv')) {
+        return (
+          title.includes('sony') ||
+          title.includes('sonyliv') ||
+          syn.includes('sony') ||
+          syn.includes('sonyliv')
+        );
+      }
+      if (platLower.includes('zee5') || platLower.includes('zee')) {
+        return title.includes('zee5') || syn.includes('zee5');
+      }
+      if (platLower.includes('apple')) {
+        return (
+          title.includes('apple') ||
+          title.includes('apple tv') ||
+          syn.includes('apple')
+        );
+      }
+      if (platLower.includes('klikk')) {
+        return title.includes('klikk') || syn.includes('klikk');
+      }
+      return title.includes(platLower) || syn.includes(platLower);
+    });
   }
 
   if (collection) {

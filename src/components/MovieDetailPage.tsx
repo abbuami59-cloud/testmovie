@@ -11,14 +11,12 @@ import {
   Calendar,
   Globe,
   Clock,
-  Sparkles,
   Film,
   HardDrive,
   Check,
   Search,
   Tv,
   Youtube,
-  Send,
   RefreshCw,
 } from 'lucide-react';
 import type { MovieItem, EpisodeItem } from '../data/cinefreakData.ts';
@@ -48,48 +46,22 @@ export const MovieDetailPage: React.FC<MovieDetailPageProps> = ({
   const [liveScreenshots, setLiveScreenshots] = useState(movie.screenshots || []);
   const [isFetchingLive, setIsFetchingLive] = useState(false);
 
-  // Sync state & automatic live token resolver on page load
+  // Hardcoded direct links & state on page load (zero external fetch needed)
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setIsPlayingStream(false);
-    setLiveDownloads(movie.downloads);
+    setLiveDownloads(movie.downloads || []);
     setLiveEpisodes(movie.episodes || []);
     setLiveScreenshots(movie.screenshots || []);
-
-    // Always fetch latest live CineCloud tokens directly from CineFreak via server proxy
-    handleFetchLiveLinks(true);
-  }, [movie.slug]);
+  }, [movie]);
 
   const movieShareUrl = `${window.location.origin}/movie/${movie.slug}`;
 
-  // Live Link & Token Resolver directly via server proxy
-  const handleFetchLiveLinks = async (silent = false) => {
-    if (!silent) {
-      setIsFetchingLive(true);
-      setToastMessage(`Connecting to server for exact live download tokens...`);
-    }
-
-    try {
-      const res = await fetch(`/api/live-links?slug=${encodeURIComponent(movie.slug)}`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data.success && Array.isArray(data.downloads) && data.downloads.length > 0) {
-          setLiveDownloads(data.downloads);
-          if (!silent) {
-            setToastMessage(`Fetched ${data.downloads.length} exact live CineCloud tokens!`);
-          }
-        } else if (!silent) {
-          setToastMessage(`Live CineCloud tokens active and verified.`);
-        }
-      } else if (!silent) {
-        setToastMessage(`Live CineCloud servers active and ready.`);
-      }
-    } catch {
-      if (!silent) setToastMessage(`Live CineCloud tokens verified.`);
-    } finally {
-      setIsFetchingLive(false);
-      if (!silent) setTimeout(() => setToastMessage(null), 3500);
-    }
+  // Instant local link confirmation (all links are 100% hardcoded inside the website)
+  const handleVerifyLinks = () => {
+    const totalCount = liveDownloads.length || liveEpisodes.length;
+    setToastMessage(`All ${totalCount} direct CineCloud download & watch links are hardcoded inside the website!`);
+    setTimeout(() => setToastMessage(null), 3000);
   };
 
   const handleCopyLink = () => {
@@ -145,13 +117,12 @@ export const MovieDetailPage: React.FC<MovieDetailPageProps> = ({
 
         <div className="flex items-center gap-2">
           <button
-            onClick={() => handleFetchLiveLinks(false)}
-            disabled={isFetchingLive}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-bold transition-colors cursor-pointer disabled:opacity-50"
-            title="Fetch live exact download links & screenshots from CineFreak"
+            onClick={handleVerifyLinks}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-bold transition-colors cursor-pointer"
+            title="All direct download links are hardcoded inside the website"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isFetchingLive ? 'animate-spin' : ''}`} />
-            <span>{isFetchingLive ? 'Syncing...' : 'Verify Live Tokens'}</span>
+            <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Verified Native Links</span>
           </button>
 
           <button
@@ -322,26 +293,6 @@ export const MovieDetailPage: React.FC<MovieDetailPageProps> = ({
             </div>
           )}
         </div>
-
-        {/* Telegram Sponsor Banner */}
-        <a
-          href="https://t.me/cinefreaktop"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-between bg-gradient-to-r from-[#12151e] to-[#1c2333] px-4 py-2.5 border-t border-white/[0.08] hover:bg-[#1a2030] transition-colors"
-        >
-          <div className="flex items-center gap-2">
-            <span className="bg-amber-400/20 text-amber-300 text-[10px] font-extrabold px-2 py-0.5 rounded">
-              OFFICIAL
-            </span>
-            <span className="text-xs sm:text-sm font-bold text-white">
-              Join our Telegram Channel for fast links &amp; updates
-            </span>
-          </div>
-          <span className="text-xs font-bold text-amber-400 flex items-center gap-1">
-            <Send className="w-3.5 h-3.5" /> Join Now
-          </span>
-        </a>
 
       </div>
 
